@@ -20,30 +20,40 @@ public class URLConverterService {
 	}
 
 	public String shortenURL(final String localURL, final String longUrl) {
+
 		LOGGER.info("Shortening {}", longUrl);
+
 		Long id = this.urlRepository.incrementID();
 		String uniqueID = IDConverter.INSTANCE.createUniqueID(id);
 		this.urlRepository.saveUrl("url:" + id, longUrl);
+
 		String baseString = this.formatLocalURLFromShortener(localURL);
 		String shortenedURL = baseString + uniqueID;
+
 		return shortenedURL;
 	}
 
 	public String getLongURLFromID(final String uniqueID) throws Exception {
+
 		Long dictionaryKey = IDConverter.INSTANCE.getDictionaryKeyFromUniqueID(uniqueID);
 		String longUrl = this.urlRepository.getUrl(dictionaryKey);
+
 		LOGGER.info("Converting shortened URL back to {}", longUrl);
+
 		return longUrl;
 	}
 
 	private String formatLocalURLFromShortener(final String localURL) {
+
 		String[] addressComponents = localURL.split("/");
-		// remove the endpoint (last index)
+
 		StringBuilder sb = new StringBuilder();
 		for (int i = 0; i < addressComponents.length - 1; ++i) {
 			sb.append(addressComponents[i]);
 		}
+
 		sb.append('/');
+
 		return sb.toString();
 	}
 
