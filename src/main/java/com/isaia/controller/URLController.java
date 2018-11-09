@@ -17,8 +17,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.view.RedirectView;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.isaia.controller.request.ShortenRequest;
 import com.isaia.service.URLConverterService;
 import com.isaia.utility.URLValidator;
 
@@ -34,14 +33,16 @@ public class URLController {
 	public String shortenUrl(@RequestBody @Valid final ShortenRequest shortenRequest, final HttpServletRequest request)
 			throws Exception {
 
-		LOGGER.info("Received url to shorten: " + shortenRequest.getUrl());
+		LOGGER.info("Regular URL: " + shortenRequest.getUrl());
 
 		String longUrl = shortenRequest.getUrl();
 
 		if (URLValidator.INSTANCE.validateURL(longUrl)) {
 			String localURL = request.getRequestURL().toString();
 			String shortenedUrl = this.urlConverterService.shortenURL(localURL, shortenRequest.getUrl());
-			LOGGER.info("Shortened url to: " + shortenedUrl);
+
+			LOGGER.info("Short URL: " + shortenedUrl);
+
 			return shortenedUrl;
 		}
 
@@ -59,27 +60,5 @@ public class URLController {
 		redirectView.setUrl("http://" + redirectUrlString);
 
 		return redirectView;
-	}
-}
-
-class ShortenRequest {
-	private String url;
-
-	@JsonCreator
-	public ShortenRequest() {
-
-	}
-
-	@JsonCreator
-	public ShortenRequest(@JsonProperty("url") final String url) {
-		this.url = url;
-	}
-
-	public String getUrl() {
-		return this.url;
-	}
-
-	public void setUrl(final String url) {
-		this.url = url;
 	}
 }
